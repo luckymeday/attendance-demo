@@ -3,6 +3,8 @@ import "../App.css";
 import { attendanceData } from "./data";
 import styled from "styled-components";
 import { useTable } from "react-table";
+import moment, { duration } from "moment";
+import "moment-duration-format";
 
 const Styles = styled.div`
   padding: 1rem;
@@ -70,6 +72,19 @@ function Table({ columns, data }) {
 }
 
 export const Attendances = () => {
+  // moment().format('lll')
+
+  // let d = new Date();
+  // console.log("Now:", d);
+
+  // let utc_offset = d.getTimezoneOffset();
+  // d.setMinutes(d.getMinutes() + utc_offset);
+  // console.log("UTC:", d);
+
+  // let ict_offset = 7 * 60;
+  // d.setMinutes(d.getMinutes() + ict_offset);
+  // console.log("ICT:", d);
+
   const columns = React.useMemo(
     () => [
       {
@@ -105,7 +120,73 @@ export const Attendances = () => {
     []
   );
 
-  const data = attendanceData;
+  const newData = attendanceData.map((item) => {
+    // console.log("item:", item);
+
+    const ictJoinTime = moment
+      .utc(item.join_time)
+      .local()
+      .format("YYYY-MMM-DD h:mm A");
+    // console.log("first join time data:", ictJoinTime);
+
+    const ictLeaveTime = moment
+      .utc(item.leave_time)
+      .local()
+      .format("YYYY-MMM-DD h:mm A");
+    // console.log("first leave time data:", ictLeaveTime);
+
+    const durationTime = moment
+      .duration(item.duration, "seconds")
+      .format("hh:mm:ss");
+    // console.log("duration time:", durationTime);
+
+    const finalData = { ...item };
+    finalData.join_time = ictJoinTime;
+    finalData.leave_time = ictLeaveTime;
+    finalData.duration = durationTime;
+    // console.log("final item:", finalData);
+
+    return finalData;
+  });
+
+  console.log("new data:", newData);
+
+  // let returnObj = {};
+
+  // let ictLeaveTime = moment(item.leave_time).add(7, "hours");
+  // console.log("Ict Leave Time:", ictLeaveTime._d);
+  // item.leave_time = ictLeaveTime._d;
+
+  // let durationTime = moment
+  //   .duration(item.duration, "seconds")
+  //   .format("hh:mm:ss");
+  // item.duration = durationTime;
+  // console.log("duration time:", durationTime);
+
+  // return returnObj;
+
+  const data = newData;
+
+  // console.log("data:", data);
+  // console.log("data2", data[1].join_time);
+
+  // let joinTime = data[7].join_time;
+  // let leaveTime = data[7].leave_time;
+  // console.log("Join Time:", joinTime);
+  // console.log("Leave Time:", leaveTime);
+
+  // let ictJoinTime = moment(joinTime).add(7, "hours");
+  // let ictLeaveTime = moment(leaveTime).add(7, "hours");
+  // console.log("Ict Join Time:", ictJoinTime._d);
+  // console.log("Ict Leave Time:", ictLeaveTime._d);
+
+  // let durationTime = data[7].duration;
+  // console.log("duration:", durationTime);
+
+  // let hours = Math.floor(durationTime / 60 / 60);
+  // let minutes = Math.floor(durationTime / 60) - hours * 60;
+  // let seconds = durationTime % 60;
+  // console.log(hours + ":" + minutes + ":" + seconds);
 
   return (
     <>
