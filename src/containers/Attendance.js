@@ -1,6 +1,6 @@
 import React from "react";
 import "../App.css";
-import { attendanceData } from "./data";
+import { attendanceData } from "../components/data";
 import styled from "styled-components";
 import { useTable } from "react-table";
 import moment, { duration } from "moment";
@@ -71,7 +71,7 @@ function Table({ columns, data }) {
   );
 }
 
-export const Attendances = () => {
+const Attendance = () => {
   // moment().format('lll')
 
   // let d = new Date();
@@ -140,7 +140,9 @@ export const Attendances = () => {
       .format("hh:mm:ss");
     // console.log("duration time:", durationTime);
 
+    // To prevent two times of time converting process, make an empty object
     const finalData = { ...item };
+
     finalData.join_time = ictJoinTime;
     finalData.leave_time = ictLeaveTime;
     finalData.duration = durationTime;
@@ -189,7 +191,7 @@ export const Attendances = () => {
   // console.log(hours + ":" + minutes + ":" + seconds);
 
   return (
-    <>
+    <div className="main-container">
       <h2>Attendance List</h2>
       <div>
         {" "}
@@ -211,9 +213,11 @@ export const Attendances = () => {
           })}{" "} */}
         </Styles>
       </div>
-    </>
+    </div>
   );
 };
+
+export default Attendance;
 
 // const Attendance = ({ email, name, joinTime, leaveTime, duration }) => {
 //   if (!email) return <div />;
