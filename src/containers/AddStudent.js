@@ -8,6 +8,9 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
+import styled from "styled-components";
+import { useTable } from "react-table";
+import { studentData } from "../components/studentData";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,6 +27,71 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
+
+const Styles = styled.div`
+  padding: 1rem;
+  table {
+    border-spacing: 0;
+    border: 1px solid black;
+    tr {
+      :last-child {
+        td {
+          border-bottom: 0;
+        }
+      }
+    }
+    th,
+    td {
+      margin: 0;
+      padding: 0.5rem;
+      border-bottom: 1px solid black;
+      border-right: 1px solid black;
+      :last-child {
+        border-right: 0;
+      }
+    }
+  }
+`;
+function Table({ columns, data }) {
+  // Use the state and functions returned from useTable to build your UI
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+  } = useTable({
+    columns,
+    data,
+  });
+
+  // Render the UI for your table
+  return (
+    <table {...getTableProps()}>
+      <thead>
+        {headerGroups.map((headerGroup) => (
+          <tr {...headerGroup.getHeaderGroupProps()}>
+            {headerGroup.headers.map((column) => (
+              <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+            ))}
+          </tr>
+        ))}
+      </thead>
+      <tbody {...getTableBodyProps()}>
+        {rows.map((row, i) => {
+          prepareRow(row);
+          return (
+            <tr {...row.getRowProps()}>
+              {row.cells.map((cell) => {
+                return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
+              })}
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+}
 
 const AddStudent = () => {
   const classes = useStyles();
@@ -43,71 +111,107 @@ const AddStudent = () => {
     console.log("add student:", formData);
   };
 
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: "Current Cohort List",
+        columns: [
+          {
+            Header: "Student Name",
+            accessor: "name",
+          },
+          {
+            Header: "Student Email",
+            accessor: "user_email",
+          },
+          {
+            Header: "Cohort Name",
+            accessor: "cohort_name",
+          },
+          {
+            Header: "Course Name",
+            accessor: "course_name",
+          },
+        ],
+      },
+    ],
+    []
+  );
+
   return (
-    <div className="main-container">
-      <h2>Add Student</h2>
-      <form
-        className={classes.root}
-        noValidate
-        autoComplete="off"
-        onSubmit={handleSubmit}
-      >
-        <FormControl required className={classes.formControl}>
-          <InputLabel id="demo-simple-select-required-label">
-            Course Name
-          </InputLabel>
-          <Select
-            labelId="demo-simple-select-required-label"
-            id="demo-simple-select-required"
-            name="courseName"
+    <>
+      <div className="main-container">
+        <h4>Add Student</h4>
+        <form
+          className={classes.root}
+          noValidate
+          autoComplete="off"
+          onSubmit={handleSubmit}
+        >
+          <FormControl required className={classes.formControl}>
+            <InputLabel id="demo-simple-select-required-label">
+              Course Name
+            </InputLabel>
+            <Select
+              labelId="demo-simple-select-required-label"
+              id="demo-simple-select-required"
+              name="courseName"
+              onChange={handleChange}
+              className={classes.selectEmpty}
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value="fullstack">Fullstack Web Development</MenuItem>
+              <MenuItem value="machine">Machine Learning</MenuItem>
+            </Select>
+            <FormHelperText>Required</FormHelperText>
+          </FormControl>
+
+          <FormControl required className={classes.formControl}>
+            <InputLabel id="demo-simple-select-required-label">
+              Coohort Name
+            </InputLabel>
+
+            <Select
+              labelId="demo-simple-select-required-label"
+              id="demo-simple-select-required"
+              name="cohortName"
+              onChange={handleChange}
+              className={classes.selectEmpty}
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value="catalina">Catalina</MenuItem>
+              <MenuItem value="mojave">Mojave</MenuItem>
+              <MenuItem value="cheetah">Cheetah</MenuItem>
+            </Select>
+            <FormHelperText>Required</FormHelperText>
+          </FormControl>
+
+          <TextField
+            required
+            id="filled-required"
+            label="Student Name"
+            name="studentName"
+            variant="outlined"
             onChange={handleChange}
-            className={classes.selectEmpty}
-          >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            <MenuItem value="fullstack">Fullstack Web Development</MenuItem>
-            <MenuItem value="machine">Machine Learning</MenuItem>
-          </Select>
-          <FormHelperText>Required</FormHelperText>
-        </FormControl>
+          />
 
-        <FormControl required className={classes.formControl}>
-          <InputLabel id="demo-simple-select-required-label">
-            Coohort Name
-          </InputLabel>
+          <Button variant="contained" color="secondary" type="submit">
+            Add
+          </Button>
+        </form>
+      </div>
 
-          <Select
-            labelId="demo-simple-select-required-label"
-            id="demo-simple-select-required"
-            name="cohortName"
-            onChange={handleChange}
-            className={classes.selectEmpty}
-          >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            <MenuItem value="catalina">Catalina</MenuItem>
-            <MenuItem value="mojave">Mojave</MenuItem>
-            <MenuItem value="cheetah">Cheetah</MenuItem>
-          </Select>
-          <FormHelperText>Required</FormHelperText>
-        </FormControl>
-        <td></td>
-        <TextField
-          required
-          id="filled-required"
-          label="Student Name"
-          name="studentName"
-          variant="outlined"
-          onChange={handleChange}
-        />
-
-        <Button variant="contained" color="secondary" type="submit">
-          Add
-        </Button>
-      </form>
-    </div>
+      <div className="list-container">
+        <h2>Current Student List</h2>
+        <Styles>
+          <Table columns={columns} data={studentData} />
+        </Styles>
+      </div>
+    </>
   );
 };
 
